@@ -11,7 +11,6 @@
       {{
         cronless_release.json.assets
         | selectattr('name', 'search', '\.deb$')
-        | selectattr('name', 'search', ansible_architecture | regex_replace('x86_64', 'amd64') | regex_replace('aarch64', 'arm64'))
         | map(attribute='browser_download_url')
         | first
       }}
@@ -20,3 +19,4 @@
   ansible.builtin.apt:
     deb: "{{ cronless_deb_url }}"
     state: present
+
