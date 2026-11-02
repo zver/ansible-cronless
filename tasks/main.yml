@@ -1,0 +1,22 @@
+- name: Get latest cronless release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/zver/cronless/releases/latest
+    return_content: true
+  register: cronless_release
+  changed_when: false
+
+- name: Find cronless deb package
+  ansible.builtin.set_fact:
+    cronless_deb_url: >-
+      {{
+        cronless_release.json.assets
+        | selectattr('name', 'search', '\.deb$')
+        | selectattr('name', 'search', ansible_architecture | regex_replace('x86_64', 'amd64') | regex_replace('aarch64', 'arm64'))
+        | map(attribute='browser_download_url')
+        | first
+      }}
+
+- name: Install latest cronless release
+  ansible.builtin.apt:
+    deb: "{{ cronless_deb_url }}"
+    state: present
