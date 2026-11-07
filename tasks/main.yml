@@ -19,4 +19,3 @@
   ansible.builtin.apt:
     deb: "{{ cronless_deb_url }}"
     state: present
-
